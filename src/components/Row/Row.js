@@ -19,17 +19,17 @@ function Row({title, fetchUrl, isLargeRow=false}) {
 
     const opts ={
         height:"390",
-        width:"100%",
+        width:"50%",
         playerVars:{
             autoplay:1,
         },
     };
 
-    const handleClick =(movie) =>{
-        if(trailerUrl){
+    const handleClick =(movieName) =>{
+        if(trailerUrl !=''){
             setTrailerUrl('');
         }else{
-            movieTrailer(null,{tmdbId:movie.id})
+            movieTrailer(movieName)
             .then((url) => {
                 const urlParams=new URLSearchParams(new URL(url).search);
                 setTrailerUrl(urlParams.get("v"));
@@ -46,7 +46,7 @@ function Row({title, fetchUrl, isLargeRow=false}) {
                     ((isLargeRow && movie.poster_path)|| (!isLargeRow && movie.backdrop_path)) &&(    
                         <img 
                             className={`row_poster ${isLargeRow && "row_posterLarge"}`} 
-                            onClick={()=> handleClick(movie)}
+                            onClick={()=> handleClick(movie.name || movie.title || movie.orginal_name)}
                             key={movie.id}
                             src={`${base_url}${
                             isLargeRow? movie.poster_path : movie.backdrop_path
@@ -57,7 +57,10 @@ function Row({title, fetchUrl, isLargeRow=false}) {
                     
                 }
             </div>
-            {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
+            {trailerUrl !='' && <YouTube 
+                                    videoId={trailerUrl} 
+                                    opts={opts} 
+                                    />}
          </div>
     )
 }

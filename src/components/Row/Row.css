@@ -1,7 +1,8 @@
 .row{
     color: white;
     margin-left: 20px;
-    margin-bottom: 1rem;   
+   
+    padding-bottom:1rem ;
 }
 .row >h3{
     margin-bottom: 0.5rem;

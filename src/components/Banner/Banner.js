@@ -4,9 +4,12 @@ import axios from "../../axios";
 import requests from "../../Requests";
 import YouTube from "react-youtube";
 import movieTrailer from 'movie-trailer';
+import { findNonSerializableValue } from '@reduxjs/toolkit';
 function Banner(){
     const [movie,setMovie] =useState([]);
     const [trailerUrl,setTrailerUrl]=useState('');
+
+    const style={backgroundColor:trailerUrl!='' && `rgba(0,0,0,0.4)`}
     useEffect(()=>{
         async function fetchData(){
             const request= await axios.get(requests.fetchTrending);
@@ -26,17 +29,17 @@ function Banner(){
 
     const opts ={
         height:"390",
-        width:"100%",
+        width:"50%",
         playerVars:{
             autoplay:1,
         },
     };
 
-    const handleClick =(movie) =>{
+    const handleClick =(movieName) =>{
         if(trailerUrl){
             setTrailerUrl('');
         }else{
-            movieTrailer(null,{tmdbId:movie.id})
+            movieTrailer(movieName)
             .then((url) => {
                 const urlParams=new URLSearchParams(new URL(url).search);
                 setTrailerUrl(urlParams.get("v"));
@@ -51,23 +54,29 @@ function Banner(){
                 backgroundSize:"cover",
                 backgroundPosition:"center center" ,
                 backgroundImage:`url("https://image.tmdb.org/t/p/original/${movie?.backdrop_path}")`,
+              
                             
         }}>
-          <div className="banner_contents">
-            <h1 className="banner_title"> 
-                {movie?.title || movie?.name || movie?.original_name}</h1>
-            <div className="banner_buttons">
-                <button onClick={()=>handleClick(movie)} className="banner_button">Play</button>
-                <button className="banner_button">My List</button>
+         
+        <div style={style}
+            className="banner_contents">
+                <h1 className="banner_title"> 
+                    {movie?.title || movie?.name || movie?.original_name}</h1>
+                <div className="banner_buttons">
+                    <button onClick={()=>handleClick(movie.name || movie.title || movie.orginal_name)} className="banner_button">Play</button>
+                    <button className="banner_button">My List</button>
+                </div>
+                <h1 className="banner_description">
+                    {truncate(movie?.overview,150)}
+                    
+                </h1>
             </div>
-            <h1 className="banner_description">
-                {truncate(movie?.overview,150)}
-                
-            </h1>
-          </div>
-
+            
+        {trailerUrl  !="" && <YouTube className="banner_video" videoId={trailerUrl} opts={opts} />}
+         
+          
           <div className="banner--fadeBottom"/>
-          {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
+          
         </header>
     );
 }
